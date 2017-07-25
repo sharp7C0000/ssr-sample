@@ -5,7 +5,7 @@ const VueSSRServerPlugin = require('vue-server-renderer/server-plugin')
 
 module.exports = merge(baseConfig, {
   
-  entry: './src/entry-client.js',
+  entry: './src/entry-server.js',
 
   target: 'node',
 

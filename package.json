@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -L ./server.js",
+    "stage": "cross-env NODE_ENV=production nodemon -L ./server.js",
     "build": "npm run build:client && npm run build:server",
     "build:client": "cross-env NODE_ENV=production webpack --config ./build/webpack.client.config.js",
     "build:server": "cross-env NODE_ENV=production webpack --config ./build/webpack.server.config.js",

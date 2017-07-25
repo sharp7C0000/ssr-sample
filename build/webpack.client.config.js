@@ -11,10 +11,5 @@ module.exports = merge(baseConfig, {
       minChunks: Infinity
     }),
     new VueSSRClientPlugin()
-  ],
-  
-  devServer: {
-    historyApiFallback: true,
-    noInfo            : true
-  }
+  ]
 })

@@ -28,11 +28,11 @@ const app = new Vue({
 
 function createRenderer (bundle, options) {
   return createBundleRenderer(bundle, Object.assign(options, {
-    template,
+   template,
     // this is only needed when vue-server-renderer is npm-linked
     basedir: resolve('./dist'),
     // recommended for performance
-    //runInNewContext: false
+    runInNewContext: false
   }))
 }
 
@@ -41,13 +41,12 @@ let readyPromise;
 
 function render (request, reply) {
   renderer.renderToString((err, html) => {
-    console.log("WEFWEFWEF", err, html);
     if (err) {
       return reply('Internal Server Error').code(500);
     }
     reply(html);
     if (!isProd) {
-      console.log(`whole request: ${Date.now() - s}ms`)
+      console.log(`whole request: ${Date.now()}ms`)
     }
   })
 }
@@ -128,8 +127,6 @@ if (isProd) {
 
 } else {
   readyPromise = require('./build/setup-dev-server')(server, (bundle, options) => {
-    
-    console.log("WEFWEFWEF", options);
     
     renderer = createRenderer(bundle, options);
     
