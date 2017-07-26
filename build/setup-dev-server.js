@@ -25,6 +25,20 @@ module.exports = function setupDevServer (server, cb) {
 
   clientConfig.output.filename = '[name].js';
   serverConfig.output.filename = '[name].js';
+
+  clientConfig.watch = true;
+
+  serverConfig.watch = true;
+
+  clientConfig.watchOptions = {
+		aggregateTimeout: 1000,
+		poll: true
+  };
+  
+  serverConfig.watchOptions = {
+		aggregateTimeout: 1000,
+		poll: true
+  };
   
   // dev middleware
   const clientCompiler = webpack(clientConfig);
