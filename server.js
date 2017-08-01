@@ -12,8 +12,9 @@ const { createBundleRenderer } = require('vue-server-renderer');
 
 const server = new Hapi.Server();
 
-let renderer     = null;
-let readyPromise = null;
+let isServerStarted = false;
+let renderer        = null;
+let readyPromise    = null;
 
 server.connection({ 
   host: '0.0.0.0', 
@@ -42,12 +43,16 @@ function render (request, reply) {
 
 function startServer () {
   // Start the server
-  server.start((err) => {
-    if (err) {
-      throw err;
-    }
-    console.log('Server running at:', server.info.uri);
-  });
+  if(!isServerStarted) {
+    server.start((err) => {
+      if (err) {
+        throw err;
+      }
+      console.log('Server running at:', server.info.uri);
+    });
+
+    isServerStarted = true;
+  }
 }
 
 // register plugin
