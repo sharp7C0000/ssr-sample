@@ -30,9 +30,17 @@ function createRenderer (bundle, options) {
 }
 
 function render (request, reply) {
-  renderer.renderToString((err, html) => {
+
+  const context = { url: request.params.param };
+
+  renderer.renderToString(context, (err, html) => {
+    console.log(err);
     if (err) {
-      return reply('Internal Server Error').code(500);
+      if (err.code === 404) {
+        return reply('Page not found').code(404);
+      } else {
+        return reply('Internal Server Error').code(500);
+      }
     }
     reply(html);
     if (!isProd) {
