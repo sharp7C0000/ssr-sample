@@ -28,10 +28,15 @@ module.exports = function setupDevServer (server, cb) {
 
   // dev middleware
   const clientCompiler = webpack(clientConfig);
+  const cMfs           = new MFS();
+
+   clientCompiler.outputFileSystem = cMfs;
 
   server.register({
     register: WebpackPlugin,
-    options : {compiler: clientCompiler}
+    options : {
+      compiler: clientCompiler, assets: { publicPath: clientConfig.output.publicPath } 
+    }
   });
 
   clientCompiler.plugin('done', stats => {
@@ -40,7 +45,7 @@ module.exports = function setupDevServer (server, cb) {
     stats.warnings.forEach(err => console.warn(err))
     if (stats.errors.length) return
     clientManifest = JSON.parse(readFile(
-     fs,
+     cMfs,
       'vue-ssr-client-manifest.json'
     ));
 

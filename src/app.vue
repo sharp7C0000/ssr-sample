@@ -21,10 +21,10 @@
 
 <template>
 
-  <div class="body-wrapper">
+  <div id="app" class="body-wrapper">
   
     <nav>
-      <h1>SSR Sample App</h1>
+      <h1>SSR Sample App1</h1>
 
       <section>
         <router-link class="button" :to="{name:'p1'}">Link1</router-link>
@@ -42,7 +42,6 @@
 <script>
 
   export default {
-
   }
 
 </script>

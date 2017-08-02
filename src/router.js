@@ -14,7 +14,8 @@ export function createRouter () {
     routes: [
       { path: '/page1', name: "p1", component: Page1 },
       { path: '/page2', name: "p2", component: Page2 },
-      { path: '/page3', name: "p3", component: Page3 }
+      { path: '/page3', name: "p3", component: Page3 },
+      { path: '/'     , redirect: '/page1' }
     ]
   })
 }
