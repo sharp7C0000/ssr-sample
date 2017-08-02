@@ -24,18 +24,25 @@ module.exports = function setupDevServer (server, cb) {
   }
 
   clientConfig.output.filename = '[name].js';
-  serverConfig.output.filename = '[name].js';
+
+  watchOption = {
+    aggregateTimeout: 300,
+    poll            : 1000
+  };
 
   // dev middleware
   const clientCompiler = webpack(clientConfig);
   const cMfs           = new MFS();
 
-   clientCompiler.outputFileSystem = cMfs;
+  clientCompiler.outputFileSystem = cMfs;
 
   server.register({
     register: WebpackPlugin,
     options : {
-      compiler: clientCompiler, assets: { publicPath: clientConfig.output.publicPath } 
+      compiler: clientCompiler, assets: { 
+        publicPath  : clientConfig.output.publicPath,
+        watchOptions: watchOption
+      } 
     }
   });
 
@@ -60,10 +67,7 @@ module.exports = function setupDevServer (server, cb) {
   const serverCompiler = webpack(serverConfig)
   const mfs = new MFS()
   serverCompiler.outputFileSystem = mfs
-  serverCompiler.watch({
-    aggregateTimeout: 300,
-      poll          : 1000
-  }, (err, stats) => {
+  serverCompiler.watch(watchOption, (err, stats) => {
     if (err) throw err
 
     console.log(stats.toString({
