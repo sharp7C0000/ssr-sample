@@ -1,7 +1,12 @@
-const fs   = require('fs');
-const path = require('path');
-const Hapi = require('hapi');
-const Vue  = require('vue');
+const fs    = require('fs');
+const path  = require('path');
+const Hapi  = require('hapi');
+const Vue   = require('vue');
+const Wreck = require('wreck');
+
+const Cryptiles      = require("cryptiles");
+const oauthSignature = require("oauth-signature");
+const queryString    = require("query-string");
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -85,6 +90,53 @@ server.route({
     file: function (request) {
       return "./manifest.json";
     }
+  }
+});
+
+server.route({
+  method: "GET",
+  path  : "/api/login",
+  handler: function (request, reply) {
+    
+    const url          = "https://api.twitter.com/oauth/request_token";
+    const oauthOptions = {
+      oauth_callback        : "http://localhost/",
+      oauth_consumer_key    : "bGKjn0l5Zu92zTBRruN1U8YCo",
+      oauth_nonce           : Cryptiles.randomString(9),
+      oauth_timestamp       : Math.floor(Date.now() / 1000).toString(),
+      oauth_signature_method: "HMAC-SHA1",
+      oauth_version         : "1.0",
+    };
+
+    const encodedSignature = oauthSignature.generate("POST", url, oauthOptions, "GcdeXsQccarT66eMgVzG9pG8WUPu0XWvHLKw3icyFcd9vpL57G", null, {
+      encodeSignature: false
+    });
+    
+    let finalParam = Object.assign({}, oauthOptions, {
+      oauth_signature: encodedSignature
+    });
+
+    const paramString = Object.keys(finalParam).map((m) => {
+      return `${m}="${encodeURIComponent(finalParam[m])}"`;
+    }).join(",");
+
+    Wreck.post(url, {
+      headers: {
+        "Content-Type" : "application/x-www-form-urlencoded",
+        "Authorization": `OAuth ${paramString}`,
+      }
+    }, (err, res, payload) => {
+      if(!err) {
+        const oauthResult = queryString.parse(payload.toString());
+        // redirect
+        const params = {
+          oauth_token: oauthResult.oauth_token
+        };
+        reply.redirect(`https://api.twitter.com/oauth/authenticate?${queryString.stringify(params)}`);
+      } else {
+        return reply('Internal Server Error').code(500);
+      }
+    });
   }
 });
 
