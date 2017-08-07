@@ -68,6 +68,36 @@ function startServer () {
   }
 }
 
+function oAuthRequest (uri, method, options) {
+  const url          = uri;
+  const oauthOptions = {
+    oauth_consumer_key    : "bGKjn0l5Zu92zTBRruN1U8YCo",
+    oauth_nonce           : Cryptiles.randomString(9),
+    oauth_timestamp       : Math.floor(Date.now() / 1000).toString(),
+    oauth_signature_method: "HMAC-SHA1",
+    oauth_version         : "1.0",
+  };
+
+  const realOptions = Object.assign({}, oauthOptions, options);
+
+  const encodedSignature = oauthSignature.generate(method, url, realOptions, "GcdeXsQccarT66eMgVzG9pG8WUPu0XWvHLKw3icyFcd9vpL57G", null, {
+    encodeSignature: false
+  });
+  
+  let finalParam = Object.assign({}, oauthOptions, {
+    oauth_signature: encodedSignature
+  });
+
+  const paramString = Object.keys(finalParam).map((m) => {
+    return `${m}="${encodeURIComponent(finalParam[m])}"`;
+  }).join(",");
+
+  return {
+    "Content-Type" : "application/x-www-form-urlencoded",
+    "Authorization": `OAuth ${paramString}`,
+  };
+}
+
 // register plugin
 server.register(require('inert'));
 
@@ -95,12 +125,47 @@ server.route({
 
 server.route({
   method: "GET",
+  path  : "/api/login/callback",
+  handler: function (request, reply) {
+    console.log("WEFWEFEWF", request.query);
+
+    const url = "https://api.twitter.com/oauth/access_token";
+
+    const h = oAuthRequest(url, "POST", {
+      oauth_token: request.query.oauth_token
+    });
+
+    Wreck.post(url, {
+      headers: Object.assign({}, {
+        "Content-Type" : "application/x-www-form-urlencoded",
+      }, h)
+    }, (err, res, payload) => {
+      console.log(err.toString());
+      if(!err) {
+        const oauthResult = queryString.parse(payload.toString());
+        console.log("!!!!", oauthResult);
+
+        return reply("ok").code(200);
+        // // redirect
+        // const params = {
+        //   oauth_token: oauthResult.oauth_token
+        // };
+        // reply.redirect(`https://api.twitter.com/oauth/authenticate?${queryString.stringify(params)}`);
+      } else {
+        return reply('Internal Server Error').code(500);
+      }
+    });
+  }
+});
+
+server.route({
+  method: "GET",
   path  : "/api/login",
   handler: function (request, reply) {
     
     const url          = "https://api.twitter.com/oauth/request_token";
     const oauthOptions = {
-      oauth_callback        : "http://localhost/",
+      oauth_callback        : "http://localhost/api/login/callback",
       oauth_consumer_key    : "bGKjn0l5Zu92zTBRruN1U8YCo",
       oauth_nonce           : Cryptiles.randomString(9),
       oauth_timestamp       : Math.floor(Date.now() / 1000).toString(),
