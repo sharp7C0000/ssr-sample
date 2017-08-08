@@ -84,9 +84,11 @@ function oAuthRequest (uri, method, options) {
     encodeSignature: false
   });
   
-  let finalParam = Object.assign({}, oauthOptions, {
+  let finalParam = Object.assign({}, realOptions, {
     oauth_signature: encodedSignature
   });
+
+  console.log("SDFSDFSDF", finalParam);
 
   const paramString = Object.keys(finalParam).map((m) => {
     return `${m}="${encodeURIComponent(finalParam[m])}"`;
@@ -132,25 +134,23 @@ server.route({
     const url = "https://api.twitter.com/oauth/access_token";
 
     const h = oAuthRequest(url, "POST", {
-      oauth_token: request.query.oauth_token
+      oauth_token: request.query.oauth_token,
+      oauth_verifier: request.query.oauth_verifier
     });
 
     Wreck.post(url, {
       headers: Object.assign({}, {
         "Content-Type" : "application/x-www-form-urlencoded",
-      }, h)
+      }, h),
+      payload: {
+        oauth_verifier: request.query.oauth_verifier
+      }
     }, (err, res, payload) => {
-      console.log(err.toString());
       if(!err) {
         const oauthResult = queryString.parse(payload.toString());
         console.log("!!!!", oauthResult);
-
+        // need auth
         return reply("ok").code(200);
-        // // redirect
-        // const params = {
-        //   oauth_token: oauthResult.oauth_token
-        // };
-        // reply.redirect(`https://api.twitter.com/oauth/authenticate?${queryString.stringify(params)}`);
       } else {
         return reply('Internal Server Error').code(500);
       }
