@@ -189,7 +189,9 @@ server.register([AuthCookie, Bell], (err) => {
     config: {
       //auth: false,
       handler: function (request, reply) {
-        request.auth.session.clear();
+        console.log("!!!!!", request.auth);
+        request.cookieAuth.clear();
+        //request.auth.session.clear();
         reply.redirect('/');
       }
     }
