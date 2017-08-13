@@ -27,17 +27,20 @@
       <h1>SSR Sample App1</h1>
 
       <section>
-        <a href="/api/login" type="button">Twitter Login</a>
-      </section>
-
-      <section>
         <router-link class="button" :to="{name:'p1'}">Link1</router-link>
         <router-link class="button" :to="{name:'p2'}">Link2</router-link>
         <router-link class="button" :to="{name:'p3'}">Link3</router-link>
       </section>
     </nav>
-    
-    <router-view></router-view>
+
+    {{sessionInfo}}
+
+    <router-view v-if="sessionInfo"></router-view>
+
+    <div v-else>
+      <a class="button" href="/auth/twitter" type="button">Twitter Login</a>
+    </div>
+
 
   </div>
 
@@ -47,6 +50,23 @@
 
   import axios from "axios";
 
-  export default {}
+  import { mapState } from 'vuex';
+
+  export default {
+
+
+    computed: {
+      ...mapState({
+        sessionInfo: (state) => state.session
+      })
+    },
+
+    asyncData ({ store, route }) {
+      console.log("!!!!", store, route);
+      // return the Promise from the action
+      //return store.dispatch('fetchItem', route.params.id)
+    },
+
+  }
 
 </script>
