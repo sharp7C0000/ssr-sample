@@ -62,7 +62,7 @@
     },
 
     asyncData ({ store, route }) {
-      console.log("!!!!", store, route);
+     // console.log("!!!!", store, route);
       // return the Promise from the action
       //return store.dispatch('fetchItem', route.params.id)
     },

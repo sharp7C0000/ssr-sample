@@ -35,13 +35,11 @@ function createRenderer (bundle, options) {
 
 function render (request, reply) {
 
-  console.log("!!!", request.auth.credentials);
-
+  console.log("render request", request.auth.credentials);
 
   const context = { url: request.params.param, session: request.auth.credentials };
 
   renderer.renderToString(context, (err, html) => {
-    console.log(err);
     if (err) {
       if (err.code === 404) {
         return reply('Page not found').code(404);
@@ -123,6 +121,7 @@ server.register([AuthCookie, Bell], (err) => {
     // validateFunc (...args) {
     //   console.log("!!!!", args);
     // },
+    isSameSite: "Lax",
     isSecure  : false
   });
 
@@ -170,7 +169,17 @@ server.register([AuthCookie, Bell], (err) => {
 
         const profile = request.auth.credentials.profile;
 
-        console.log("!!!!", request.auth.credentials);
+        //console.log("!!!!", request.auth.credentials);
+
+        // request.server.app.cache.set(sid, { account: account }, 0, (err) => {
+
+        //     if (err) {
+        //         reply(err);
+        //     }
+
+        //     request.cookieAuth.set({ sid: sid });
+        //     return reply.redirect('/');
+        // });
 
         request.cookieAuth.set({
           twitterId  : profile.id,

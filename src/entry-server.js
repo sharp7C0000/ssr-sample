@@ -8,7 +8,7 @@ export default context => {
     // set initial session
     store.commit("setSession", context.session);
 
-    console.log('str', store.state);
+    //console.log('str', store.state);
 
     router.push(context.url);
 
@@ -35,7 +35,7 @@ export default context => {
         // serialized and injected into the HTML as `window.__INITIAL_STATE__`.
         context.state = store.state
 
-        console.log('str2', store.state);
+        //console.log('str2', store.state);
 
         resolve(app)
       }).catch(reject)

@@ -33,9 +33,9 @@ export function createStore () {
 
     mutations: {
       setSession (state, sessionData) {
-        console.log("sdt", sessionData);
+        //console.log("sdt", sessionData);
         state.session = sessionData;
-        console.log("!!!!", state);
+       // console.log("!!!!", state);
         Vue.set(state, "session", sessionData);
       }
     }
